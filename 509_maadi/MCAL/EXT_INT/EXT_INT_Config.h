@@ -1,0 +1,18 @@
+/*
+ * EXT_INT_Config.h
+ *
+ *  Created on: Sep 9, 2022
+ *      Author: malak
+ */
+
+#ifndef MCAL_EXT_INT_EXT_INT_CONFIG_H_
+#define MCAL_EXT_INT_EXT_INT_CONFIG_H_
+
+/*
+ * SELECT SENSE_CONTROL Options: RISING_EDGE,FALLING_EDGE,LOW_LEVEL,ANY_LOGICAL_CHANGE
+ */
+#define    SENSE_CONTROL_0      RISING_EDGE
+#define    SENSE_CONTROL_1      RISING_EDGE
+#define    SENSE_CONTROL_2      RISING_EDGE
+
+#endif /* MCAL_EXT_INT_EXT_INT_CONFIG_H_ */

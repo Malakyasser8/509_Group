@@ -1,0 +1,128 @@
+/*
+ * ADC_Prog.c
+ *
+ *  Created on: Sep 20, 2022
+ *      Author: malak
+ */
+
+#include "ADC_Interface.h"
+#include "ADC_Private.h"
+
+void M_ADC_Void_ADCInit(void)
+{
+#if      ADC_V_REF_MODE  ==      AVCC
+	//To select Vref -> AVCC
+	SET_BIT(ADMUX_REG,REFS0_BIT);
+	CLR_BIT(ADMUX_REG,REFS1_BIT);
+#elif      ADC_V_REF_MODE  ==      AREF_PIN
+	CLR_BIT(ADMUX_REG,REFS0_BIT);
+	CLR_BIT(ADMUX_REG,REFS1_BIT);
+#elif      ADC_V_REF_MODE  ==      _2V5
+	SET_BIT(ADMUX_REG,REFS0_BIT);
+	SET_BIT(ADMUX_REG,REFS1_BIT);
+#endif
+    //ADC right Adjust
+	CLR_BIT(ADMUX_REG,ADLAR_BIT);
+
+#if    ADC_PRESCALER_DIV      ==    128
+	SET_BIT(ADCSRA_REG,ADPS0_BIT);
+	SET_BIT(ADCSRA_REG,ADPS1_BIT);
+	SET_BIT(ADCSRA_REG,ADPS2_BIT);
+#elif    ADC_PRESCALER_DIV      ==    64
+	CLR_BIT(ADCSRA_REG,ADPS0_BIT);
+	SET_BIT(ADCSRA_REG,ADPS1_BIT);
+	SET_BIT(ADCSRA_REG,ADPS2_BIT);
+#endif
+
+	//Auto Trigger Enable
+	SET_BIT(ADCSRA_REG,ADATE_PIN);
+
+	//Enable
+	SET_BIT(ADCSRA_REG,ADEN_BIT);
+}
+
+u16 M_ADC_U16_ADCRead(u8 Copy_U8_AdcChannel)
+{
+	switch(Copy_U8_AdcChannel)//TO select pin
+	{
+	case ADC_CHANNEL_0:
+	    {
+		CLR_BIT(ADMUX_REG,MUX0_BIT);
+	    CLR_BIT(ADMUX_REG,MUX1_BIT);
+		CLR_BIT(ADMUX_REG,MUX2_BIT);
+		CLR_BIT(ADMUX_REG,MUX3_BIT);
+		CLR_BIT(ADMUX_REG,MUX4_BIT);
+		break;
+	    }
+	case ADC_CHANNEL_1:
+	    {
+		SET_BIT(ADMUX_REG, MUX0_BIT);
+		CLR_BIT(ADMUX_REG, MUX1_BIT);
+		CLR_BIT(ADMUX_REG, MUX2_BIT);
+	    CLR_BIT(ADMUX_REG, MUX3_BIT);
+	    CLR_BIT(ADMUX_REG, MUX4_BIT);
+	    break;
+	    }
+	case ADC_CHANNEL_2:
+		{
+		CLR_BIT(ADMUX_REG, MUX0_BIT);
+		SET_BIT(ADMUX_REG, MUX1_BIT);
+		CLR_BIT(ADMUX_REG, MUX2_BIT);
+		CLR_BIT(ADMUX_REG, MUX3_BIT);
+		CLR_BIT(ADMUX_REG, MUX4_BIT);
+		break;
+	    }
+	case ADC_CHANNEL_3:
+		{
+			SET_BIT(ADMUX_REG, MUX0_BIT);
+			SET_BIT(ADMUX_REG, MUX1_BIT);
+			CLR_BIT(ADMUX_REG, MUX2_BIT);
+		    CLR_BIT(ADMUX_REG, MUX3_BIT);
+		    CLR_BIT(ADMUX_REG, MUX4_BIT);
+		break;
+		}
+	case ADC_CHANNEL_4:
+		{
+			CLR_BIT(ADMUX_REG, MUX0_BIT);
+			CLR_BIT(ADMUX_REG, MUX1_BIT);
+			SET_BIT(ADMUX_REG, MUX2_BIT);
+		    CLR_BIT(ADMUX_REG, MUX3_BIT);
+		    CLR_BIT(ADMUX_REG, MUX4_BIT);
+		break;
+		}
+	case ADC_CHANNEL_5:
+		{
+			SET_BIT(ADMUX_REG, MUX0_BIT);
+			CLR_BIT(ADMUX_REG, MUX1_BIT);
+			SET_BIT(ADMUX_REG, MUX2_BIT);
+		    CLR_BIT(ADMUX_REG, MUX3_BIT);
+		    CLR_BIT(ADMUX_REG, MUX4_BIT);
+		break;
+		}
+	case ADC_CHANNEL_6:
+		{
+			CLR_BIT(ADMUX_REG, MUX0_BIT);
+			SET_BIT(ADMUX_REG, MUX1_BIT);
+			SET_BIT(ADMUX_REG, MUX2_BIT);
+		    CLR_BIT(ADMUX_REG, MUX3_BIT);
+		    CLR_BIT(ADMUX_REG, MUX4_BIT);
+		break;
+		}
+	case ADC_CHANNEL_7:
+		{
+			SET_BIT(ADMUX_REG, MUX0_BIT);
+			SET_BIT(ADMUX_REG, MUX1_BIT);
+			SET_BIT(ADMUX_REG, MUX2_BIT);
+		    CLR_BIT(ADMUX_REG, MUX3_BIT);
+		    CLR_BIT(ADMUX_REG, MUX4_BIT);
+		break;
+		}
+	default:  break;
+	}
+    //Start Conversion kol mara bghar feha el eraya
+	SET_BIT(ADCSRA_REG,ADSC_BIT);
+
+    //bdal el delay ashan ana msh arfa haykhls katb fl register emta
+	while(GET_BIT(ADCSRA_REG,ADIF_BIT) == ADC_DELAY);
+    return ADCL_REG;
+}
